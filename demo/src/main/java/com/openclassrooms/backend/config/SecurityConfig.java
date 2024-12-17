@@ -1,4 +1,4 @@
-package com.openclassrooms.demo.config;
+package com.openclassrooms.backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,8 +26,7 @@ public class SecurityConfig {
   SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(customizer -> customizer.disable())
       .authorizeHttpRequests(request -> request
-        .requestMatchers("/all").permitAll()
-        .anyRequest().authenticated())
+        .anyRequest().permitAll())
       .httpBasic(Customizer.withDefaults());
     return http.build();
   }
