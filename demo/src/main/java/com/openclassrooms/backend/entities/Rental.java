@@ -1,10 +1,8 @@
-package com.openclassrooms.demo.entities;
+package com.openclassrooms.backend.entities;
 
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Table(name = "rentals")
 @Entity

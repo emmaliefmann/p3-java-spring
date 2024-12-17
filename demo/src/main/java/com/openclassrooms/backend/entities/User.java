@@ -1,4 +1,4 @@
-package com.openclassrooms.demo.entities;
+package com.openclassrooms.backend.entities;
 
 import jakarta.persistence.*;
 
@@ -27,7 +27,7 @@ public class User {
   private LocalDateTime createdAt;
 
   @Column
-  private LocalDateTime updateAt;
+  private LocalDateTime updatedAt;
 
   @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Rental> rentals = new ArrayList<>();
@@ -60,11 +60,11 @@ public class User {
   }
 
   public LocalDateTime getUpdateAt() {
-    return updateAt;
+    return updatedAt;
   }
 
   public void setUpdateAt(LocalDateTime updateAt) {
-    this.updateAt = updateAt;
+    this.updatedAt = updateAt;
   }
 
   public LocalDateTime getCreatedAt() {

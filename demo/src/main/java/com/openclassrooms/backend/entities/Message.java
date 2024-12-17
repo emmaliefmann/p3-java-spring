@@ -1,4 +1,4 @@
-package com.openclassrooms.demo.entities;
+package com.openclassrooms.backend.entities;
 
 import jakarta.persistence.*;
 

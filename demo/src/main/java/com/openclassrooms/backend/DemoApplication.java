@@ -1,4 +1,4 @@
-package com.openclassrooms.demo;
+package com.openclassrooms.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
