@@ -1,8 +1,13 @@
 package com.openclassrooms.backend.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -22,6 +27,9 @@ import java.util.Map;
 @EnableWebSecurity
 public class SecurityConfig {
 
+  @Autowired
+  private UserDetailsService userDetailsService;
+
   @Bean
   SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(customizer -> customizer.disable())
@@ -32,24 +40,21 @@ public class SecurityConfig {
   }
 
   @Bean
-  public UserDetailsService userDetailsManager() {
-
-    UserDetails emma = User.builder()
-      .username("Emma")
-      .password("{noop}test123")
-      .build();
-
-    return new InMemoryUserDetailsManager(emma);
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
   }
 
   @Bean
-  public PasswordEncoder passwordEncoder() {
-    var encoders = new HashMap<String, PasswordEncoder>(
-      Map.of("bcrypt",new BCryptPasswordEncoder(),
-        "noop", NoOpPasswordEncoder.getInstance())
-    );
+  public AuthenticationProvider authenticationProvider() {
+    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+    provider.setPasswordEncoder(passwordEncoder());
+    provider.setUserDetailsService(userDetailsService);
+    return provider;
+  }
 
-    var e = new DelegatingPasswordEncoder("noop", encoders);
-    return e;
+
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    return config.getAuthenticationManager();
   }
 }

@@ -1,5 +1,6 @@
 package com.openclassrooms.backend.controllers;
 
+import com.openclassrooms.backend.dto.LoginRequestDTO;
 import com.openclassrooms.backend.dto.UserRequestDTO;
 import com.openclassrooms.backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+
 public class AuthController {
 
   @Autowired
@@ -16,5 +18,11 @@ public class AuthController {
   @PostMapping("/auth/register")
   public void registerUser(@RequestBody UserRequestDTO request) {
     userService.registerNewUser(request);
+  }
+
+  @PostMapping("/auth/email")
+  public void login(@RequestBody LoginRequestDTO login) {
+    System.out.println("controller");
+    userService.verifyUser(login);
   }
 }
