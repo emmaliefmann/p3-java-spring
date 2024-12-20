@@ -1,5 +1,6 @@
 package com.openclassrooms.backend.config;
 
+import com.openclassrooms.backend.services.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,15 +11,12 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,14 +26,20 @@ import java.util.Map;
 public class SecurityConfig {
 
   @Autowired
-  private UserDetailsService userDetailsService;
+  private CustomUserDetailsService customUserDetailsService;
+
+  @Autowired
+  private JWTFilter jwtFilter;
 
   @Bean
   SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(customizer -> customizer.disable())
       .authorizeHttpRequests(request -> request
-        .anyRequest().permitAll())
-      .httpBasic(Customizer.withDefaults());
+        .requestMatchers("/auth/").permitAll()
+        .anyRequest().authenticated())
+      .httpBasic(Customizer.withDefaults())
+      .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+      .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 
@@ -48,7 +52,7 @@ public class SecurityConfig {
   public AuthenticationProvider authenticationProvider() {
     DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
     provider.setPasswordEncoder(passwordEncoder());
-    provider.setUserDetailsService(userDetailsService);
+    provider.setUserDetailsService(customUserDetailsService);
     return provider;
   }
 

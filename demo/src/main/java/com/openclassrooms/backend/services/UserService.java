@@ -20,18 +20,21 @@ public class UserService {
 
   private final PasswordEncoder passwordEncoder;
 
-@Autowired
-private UserRepository userRepository;
+  @Autowired
+  private UserRepository userRepository;
 
   @Autowired
   AuthenticationManager authManager;
+
+  @Autowired
+  private JWTService jwtService;
 
   public UserService(PasswordEncoder passwordEncoder) {
     this.passwordEncoder = passwordEncoder;
   }
 
-  public User registerNewUser(UserRequestDTO userRequestDTO) {
-    // returns completed profile ?
+  public void registerNewUser(UserRequestDTO userRequestDTO) {
+    // returns completed profile, map object back
     // check email doesn't already exist make exception
     User user = new User();
     user.setEmail(userRequestDTO.getEmail());
@@ -40,7 +43,7 @@ private UserRepository userRepository;
     user.setCreatedAt(LocalDateTime.now());
     user.setUpdateAt(LocalDateTime.now());
     // correct return type?
-    return userRepository.save(user);
+    userRepository.save(user);
   }
 
   public UserResponseDTO getUserById(Long id) {
@@ -57,31 +60,26 @@ private UserRepository userRepository;
     return responseDTO;
   }
 
-  public void verifyUser(LoginRequestDTO login) {
+  public User getUserWithEmail(String email) {
+    return this.userRepository.findByEmail(email)
+      .orElseThrow(() -> new RuntimeException("User not found"));
+  }
 
-//    Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(login.getLogin(), login.getPassword()));
-//    //implementer tokens
-//    if (auth.isAuthenticated()) {
-//      System.out.println("Login success");
-//    }
-//    else if(!auth.isAuthenticated()) {
-//      // custom exception needed
-//      throw new RuntimeException("Login failed for user: " + login.getLogin());
-//    }
-//    throw new RuntimeException("Login failed for user: " + login.getLogin());
-//
+  public String verifyUser(LoginRequestDTO login) {
+    User user = getUserWithEmail(login.getLogin());
     try {
       Authentication auth = authManager.authenticate(
         new UsernamePasswordAuthenticationToken(login.getLogin(), login.getPassword())
       );
 
       if (auth.isAuthenticated()) {
-        System.out.println("Login success");
+        return jwtService.generateToken(user);
       }
     } catch (BadCredentialsException e) {
       throw new RuntimeException("Invalid credentials for user: " + login.getLogin(), e);
     } catch (Exception e) {
       throw new RuntimeException("Authentication failed for user: " + login.getLogin(), e);
     }
+    return "";
   }
 }
