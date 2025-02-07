@@ -2,6 +2,7 @@ package com.openclassrooms.backend.config;
 
 import com.openclassrooms.backend.services.CustomUserDetailsService;
 import com.openclassrooms.backend.services.JWTService;
+import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,11 +15,13 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.util.List;
 
-public class JWTFilter extends OncePerRequestFilter {
+@Component
+public class JwtFilter extends OncePerRequestFilter {
 
   @Autowired
   JWTService jwtService;
@@ -27,7 +30,7 @@ public class JWTFilter extends OncePerRequestFilter {
   ApplicationContext context;
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, java.io.IOException {
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, java.io.IOException {
     String authHeader = request.getHeader("Authorization");
     String token = null;
     String username = null;
@@ -36,7 +39,7 @@ public class JWTFilter extends OncePerRequestFilter {
     if(authHeader !=null && authHeader.startsWith("Bearer ")) {
       token = authHeader.substring(7);
       username = jwtService.extractUsername(token);
-      //role = jwtService.extractRole(token);
+      role = jwtService.extractRole(token);
     }
 
     if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){

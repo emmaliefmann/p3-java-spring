@@ -66,14 +66,16 @@ public class UserService {
   }
 
   public String verifyUser(LoginRequestDTO login) {
-    User user = getUserWithEmail(login.getLogin());
+    System.out.println("Verify user method");
     try {
       Authentication auth = authManager.authenticate(
         new UsernamePasswordAuthenticationToken(login.getLogin(), login.getPassword())
       );
 
       if (auth.isAuthenticated()) {
-        return jwtService.generateToken(user);
+        User user = getUserWithEmail(login.getLogin());
+        System.out.println("if clause service");
+        //return jwtService.generateToken(user);
       }
     } catch (BadCredentialsException e) {
       throw new RuntimeException("Invalid credentials for user: " + login.getLogin(), e);

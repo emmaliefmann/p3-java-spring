@@ -24,14 +24,17 @@ public class JWTService {
   public JWTService() {
     try {
       KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
+      keyGen.init(256);
       SecretKey sk = keyGen.generateKey();
       this.secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
+      System.out.println("constructor " + this.secretKey);
     } catch (NoSuchAlgorithmException e) {
       throw new RuntimeException(e);
     }
   }
 
   public String generateToken(User user) {
+    System.out.println("generate token method " + this.secretKey);
     Map<String, Object> claims = new HashMap<>();
     return Jwts.builder()
       .claims()
@@ -82,4 +85,8 @@ public class JWTService {
     return extractClaim(token, Claims::getExpiration);
   }
 
+  public String extractRole(String token) {
+    Claims claims = extractAllClaims(token);
+    return claims.get("role", String.class);  // Assuming you put the role as "role" in the token
+  }
 }
