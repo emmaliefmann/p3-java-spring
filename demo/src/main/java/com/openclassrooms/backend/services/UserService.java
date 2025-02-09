@@ -5,6 +5,7 @@ import com.openclassrooms.backend.dto.UserRequestDTO;
 import com.openclassrooms.backend.dto.UserResponseDTO;
 import com.openclassrooms.backend.entities.User;
 import com.openclassrooms.backend.repositories.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,12 +36,7 @@ public class UserService {
   public void registerNewUser(UserRequestDTO userRequestDTO) {
     // returns completed profile, map object back
     // check email doesn't already exist make exception
-    User user = new User();
-    user.setEmail(userRequestDTO.getEmail());
-    user.setName(userRequestDTO.getName());
-    user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
-    user.setCreatedAt(LocalDateTime.now());
-    user.setUpdateAt(LocalDateTime.now());
+    User user = convertToEntity(userRequestDTO);
     // correct return type?
     userRepository.save(user);
   }
@@ -59,26 +55,31 @@ public class UserService {
     return responseDTO;
   }
 
-  public User getUserWithEmail(String email) {
-    return this.userRepository.findByEmail(email)
-      .orElseThrow(() -> new RuntimeException("User not found"));
-  }
+  public void verifyUser(LoginRequestDTO login) {
 
-  public String verifyUser(LoginRequestDTO user) {
-    System.out.println("verify user method");
-    System.out.println(user.getPassword());
-    System.out.println(user.getEmail());
-    Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+//    Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(login.getLogin(), login.getPassword()));
+//    //implementer tokens
+//    if (auth.isAuthenticated()) {
+//      System.out.println("Login success");
+//    }
+//    else if(!auth.isAuthenticated()) {
+//      // custom exception needed
+//      throw new RuntimeException("Login failed for user: " + login.getLogin());
+//    }
+//    throw new RuntimeException("Login failed for user: " + login.getLogin());
+//
+    try {
+      Authentication auth = authManager.authenticate(
+        new UsernamePasswordAuthenticationToken(login.getLogin(), login.getPassword())
+      );
 
-    if (auth.isAuthenticated()) {
-      System.out.println("is authenticated");
-      return jwtService.generateToken(user);
+      if (auth.isAuthenticated()) {
+        System.out.println("Login success");
+      }
+    } catch (BadCredentialsException e) {
+      throw new RuntimeException("Invalid credentials for user: " + login.getLogin(), e);
+    } catch (Exception e) {
+      throw new RuntimeException("Authentication failed for user: " + login.getLogin(), e);
     }
-    else if(!auth.isAuthenticated()) {
-      System.out.println("not authenticated    ");
-    throw new RuntimeException("Login failed for user: " + user.getEmail());
-    }
-    System.out.println("should throw error");
-    throw new RuntimeException("Login failed for user: " + user.getEmail());
   }
 }

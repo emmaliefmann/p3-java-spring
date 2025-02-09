@@ -1,5 +1,6 @@
 package com.openclassrooms.backend.config;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,11 +41,13 @@ public class SecurityConfig {
     return http.build();
   }
 
-  @Bean
+  
+
+@Bean
   public AuthenticationManager authManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
     return authenticationConfiguration.getAuthenticationManager();
   }
-
+  
   @Bean
   public AuthenticationProvider authenticationProvider() {
     DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -69,4 +72,10 @@ public class SecurityConfig {
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
+
+   @Bean
+  public ModelMapper modelMapper() {
+    return new ModelMapper();
+  }
+
 }
