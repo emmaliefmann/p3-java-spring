@@ -38,6 +38,7 @@ public class JwtFilter extends OncePerRequestFilter {
     String role = null;
 
     if(authHeader !=null && authHeader.startsWith("Bearer ")) {
+      System.out.println("starts with bearer");
       System.out.println(authHeader);
       token = authHeader.substring(7);
       username = jwtService.extractUsername(token);
@@ -48,7 +49,7 @@ public class JwtFilter extends OncePerRequestFilter {
       System.out.println("second if");
       // directly importing UserDetails would create circular dependency
       UserDetails userDetails = context.getBean(CustomUserDetailsService.class).loadUserByUsername(username);
-      if(jwtService.validateToken(token, userDetails)){
+      if (jwtService.validateToken(token, userDetails)) {
         List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(role);
         UsernamePasswordAuthenticationToken authToken =
           new UsernamePasswordAuthenticationToken(userDetails, null, authorities);

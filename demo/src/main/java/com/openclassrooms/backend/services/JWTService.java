@@ -32,12 +32,12 @@ public class JWTService {
   }
 
   public String generateToken(LoginRequestDTO user) {
-    System.out.println("generate token method " + this.secretKey);
+
     Map<String, Object> claims = new HashMap<>();
     return Jwts.builder()
       .claims()
       .add(claims)
-      .subject(user.getLogin())
+      .subject(user.getEmail())
       .issuedAt(new Date(System.currentTimeMillis()))
       .expiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
       .and()

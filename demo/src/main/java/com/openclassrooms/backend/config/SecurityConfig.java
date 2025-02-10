@@ -33,23 +33,20 @@ public class SecurityConfig {
   @Autowired
   private UserDetailsService userDetailsService;
 
-  @Autowired
-  private JwtFilter jwtFilter;
-
   @Bean
   SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(customizer -> customizer.disable())
       .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .authorizeHttpRequests(request -> request
-        .anyRequest().permitAll())
-
+        .requestMatchers("auth/email", "auth/register").permitAll()
+        .anyRequest().authenticated())
       .httpBasic(Customizer.withDefaults());
     return http.build();
   }
 
   @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-    return config.getAuthenticationManager();
+  public AuthenticationManager authManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    return authenticationConfiguration.getAuthenticationManager();
   }
 
   @Bean
@@ -75,10 +72,5 @@ public class SecurityConfig {
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
-  }
-
-  @Bean
-  public AuthenticationManager authManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-    return authenticationConfiguration.getAuthenticationManager();
   }
 }

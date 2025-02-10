@@ -7,7 +7,6 @@ import com.openclassrooms.backend.entities.User;
 import com.openclassrooms.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -66,15 +65,20 @@ public class UserService {
   }
 
   public String verifyUser(LoginRequestDTO user) {
-    Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword()));
+    System.out.println("verify user method");
+    System.out.println(user.getPassword());
+    System.out.println(user.getEmail());
+    Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 
     if (auth.isAuthenticated()) {
-      System.out.println("verify user method");
+      System.out.println("is authenticated");
       return jwtService.generateToken(user);
     }
     else if(!auth.isAuthenticated()) {
-      throw new RuntimeException("Login failed for user: " + user.getLogin());
+      System.out.println("not authenticated    ");
+    throw new RuntimeException("Login failed for user: " + user.getEmail());
     }
-    throw new RuntimeException("Login failed for user: " + user.getLogin());
+    System.out.println("should throw error");
+    throw new RuntimeException("Login failed for user: " + user.getEmail());
   }
 }
