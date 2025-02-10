@@ -1,6 +1,6 @@
 package com.openclassrooms.backend.services;
 
-import com.openclassrooms.backend.entities.User;
+import com.openclassrooms.backend.dto.LoginRequestDTO;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,22 +24,20 @@ public class JWTService {
   public JWTService() {
     try {
       KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
-      keyGen.init(256);
       SecretKey sk = keyGen.generateKey();
       this.secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
-      System.out.println("constructor " + this.secretKey);
     } catch (NoSuchAlgorithmException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public String generateToken(User user) {
+  public String generateToken(LoginRequestDTO user) {
     System.out.println("generate token method " + this.secretKey);
     Map<String, Object> claims = new HashMap<>();
     return Jwts.builder()
       .claims()
       .add(claims)
-      .subject(user.getName())
+      .subject(user.getLogin())
       .issuedAt(new Date(System.currentTimeMillis()))
       .expiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
       .and()
@@ -87,6 +85,6 @@ public class JWTService {
 
   public String extractRole(String token) {
     Claims claims = extractAllClaims(token);
-    return claims.get("role", String.class);  // Assuming you put the role as "role" in the token
+    return claims.get("role", String.class);
   }
 }

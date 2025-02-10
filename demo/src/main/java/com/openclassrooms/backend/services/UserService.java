@@ -65,23 +65,16 @@ public class UserService {
       .orElseThrow(() -> new RuntimeException("User not found"));
   }
 
-  public String verifyUser(LoginRequestDTO login) {
-    System.out.println("Verify user method");
-    try {
-      Authentication auth = authManager.authenticate(
-        new UsernamePasswordAuthenticationToken(login.getLogin(), login.getPassword())
-      );
+  public String verifyUser(LoginRequestDTO user) {
+    Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword()));
 
-      if (auth.isAuthenticated()) {
-        User user = getUserWithEmail(login.getLogin());
-        System.out.println("if clause service");
-        //return jwtService.generateToken(user);
-      }
-    } catch (BadCredentialsException e) {
-      throw new RuntimeException("Invalid credentials for user: " + login.getLogin(), e);
-    } catch (Exception e) {
-      throw new RuntimeException("Authentication failed for user: " + login.getLogin(), e);
+    if (auth.isAuthenticated()) {
+      System.out.println("verify user method");
+      return jwtService.generateToken(user);
     }
-    return "";
+    else if(!auth.isAuthenticated()) {
+      throw new RuntimeException("Login failed for user: " + user.getLogin());
+    }
+    throw new RuntimeException("Login failed for user: " + user.getLogin());
   }
 }
