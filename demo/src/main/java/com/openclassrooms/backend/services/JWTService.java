@@ -66,12 +66,12 @@ public class JWTService {
       .getPayload();
   }
 
-  public String extractUsername(String token) {
+  public String extractEmail(String token) {
     return extractClaim(token, Claims::getSubject);
   }
 
   public boolean validateToken(String token, UserDetails userDetails) {
-    final String userName = extractUsername(token);
+    final String userName = extractEmail(token);
     return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
   }
 
