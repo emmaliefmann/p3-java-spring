@@ -36,8 +36,7 @@ public class AuthController {
       .body(token);
   }
 
-  @GetMapping("/auth/email")
-  public void testRoute() {
-    System.out.println("test");
-  }
+  //@GetMapping("/auth/me")
+  // return type not found in mockoon ?
+
 }

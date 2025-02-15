@@ -36,7 +36,12 @@ public class UserService {
   public void registerNewUser(UserRequestDTO userRequestDTO) {
     // returns completed profile, map object back
     // check email doesn't already exist make exception
-    User user = convertToEntity(userRequestDTO);
+    User user = new User();
+    user.setEmail(userRequestDTO.getEmail());
+    user.setName(userRequestDTO.getName());
+    user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
+    user.setCreatedAt(LocalDateTime.now());
+    user.setUpdateAt(LocalDateTime.now());
     // correct return type?
     userRepository.save(user);
   }
@@ -55,31 +60,26 @@ public class UserService {
     return responseDTO;
   }
 
-  public void verifyUser(LoginRequestDTO login) {
+  public User getUserWithEmail(String email) {
+    return this.userRepository.findByEmail(email)
+      .orElseThrow(() -> new RuntimeException("User not found"));
+  }
 
-//    Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(login.getLogin(), login.getPassword()));
-//    //implementer tokens
-//    if (auth.isAuthenticated()) {
-//      System.out.println("Login success");
-//    }
-//    else if(!auth.isAuthenticated()) {
-//      // custom exception needed
-//      throw new RuntimeException("Login failed for user: " + login.getLogin());
-//    }
-//    throw new RuntimeException("Login failed for user: " + login.getLogin());
-//
-    try {
-      Authentication auth = authManager.authenticate(
-        new UsernamePasswordAuthenticationToken(login.getLogin(), login.getPassword())
-      );
+  public String verifyUser(LoginRequestDTO user) {
+    System.out.println("verify user method");
+    System.out.println(user.getPassword());
+    System.out.println(user.getEmail());
+    Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 
-      if (auth.isAuthenticated()) {
-        System.out.println("Login success");
-      }
-    } catch (BadCredentialsException e) {
-      throw new RuntimeException("Invalid credentials for user: " + login.getLogin(), e);
-    } catch (Exception e) {
-      throw new RuntimeException("Authentication failed for user: " + login.getLogin(), e);
+    if (auth.isAuthenticated()) {
+      System.out.println("is authenticated");
+      return jwtService.generateToken(user);
     }
+    else if(!auth.isAuthenticated()) {
+      System.out.println("not authenticated    ");
+      throw new RuntimeException("Login failed for user: " + user.getEmail());
+    }
+    System.out.println("should throw error");
+    throw new RuntimeException("Login failed for user: " + user.getEmail());
   }
 }
