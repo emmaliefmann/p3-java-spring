@@ -4,8 +4,10 @@ import com.openclassrooms.backend.dto.LoginRequestDTO;
 import com.openclassrooms.backend.dto.UserRequestDTO;
 import com.openclassrooms.backend.dto.UserResponseDTO;
 import com.openclassrooms.backend.entities.User;
+import com.openclassrooms.backend.exceptions.AuthenticationException;
+import com.openclassrooms.backend.exceptions.UserAlreadyExistsException;
+import com.openclassrooms.backend.exceptions.UserNotFoundException;
 import com.openclassrooms.backend.repositories.UserRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -33,23 +36,24 @@ public class UserService {
     this.passwordEncoder = passwordEncoder;
   }
 
-  public void registerNewUser(UserRequestDTO userRequestDTO) {
-    // returns completed profile, map object back
-    // check email doesn't already exist make exception
+  public void registerNewUser(UserRequestDTO userDTO) {
+    Optional<User> existingUser = this.userRepository.findByEmail(userDTO.getEmail());
+    if (existingUser.isPresent()) {
+      throw new UserAlreadyExistsException("User with this email already exists");
+    }
+
     User user = new User();
-    user.setEmail(userRequestDTO.getEmail());
-    user.setName(userRequestDTO.getName());
-    user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
+    user.setEmail(userDTO.getEmail());
+    user.setName(userDTO.getName());
+    user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
     user.setCreatedAt(LocalDateTime.now());
     user.setUpdateAt(LocalDateTime.now());
-    // correct return type?
     userRepository.save(user);
   }
 
   public UserResponseDTO getUserById(Long id) {
     User user = userRepository.findUserById(id)
-      // make specific exception
-      .orElseThrow(() -> new RuntimeException("User not found"));
+      .orElseThrow(() -> new UserNotFoundException("User not found"));
     UserResponseDTO responseDTO = new UserResponseDTO();
     responseDTO.setId(user.getId());
     responseDTO.setName(user.getName());
@@ -76,10 +80,10 @@ public class UserService {
       return jwtService.generateToken(user);
     }
     else if(!auth.isAuthenticated()) {
-      System.out.println("not authenticated    ");
-      throw new RuntimeException("Login failed for user: " + user.getEmail());
+      System.out.println("not authenticated");
+      throw new AuthenticationException("Login failed for user: " + user.getEmail());
     }
     System.out.println("should throw error");
-    throw new RuntimeException("Login failed for user: " + user.getEmail());
+    throw new AuthenticationException("Login failed for user: " + user.getEmail());
   }
 }
