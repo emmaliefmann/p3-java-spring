@@ -3,6 +3,7 @@ package com.openclassrooms.backend.services;
 import com.openclassrooms.backend.dto.RentalListDTO;
 import com.openclassrooms.backend.dto.RentalRequestDTO;
 import com.openclassrooms.backend.dto.RentalResponseDTO;
+import com.openclassrooms.backend.dto.ResponseDTO;
 import com.openclassrooms.backend.entities.Rental;
 import com.openclassrooms.backend.entities.User;
 import com.openclassrooms.backend.repositories.RentalRepository;
@@ -28,7 +29,7 @@ public class RentalService {
   @Autowired
   private ModelMapper modelMapper;
 
-  public String createRental(RentalRequestDTO request) {
+  public ResponseDTO createRental(RentalRequestDTO request) {
     // get user credentials from auth
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     // despite name of method, return value is email, not username
@@ -38,9 +39,10 @@ public class RentalService {
     Rental rental = convertToEntity(request, user);
     System.out.println(rental);
     rentalRepository.save(rental);
-    // find in reponsitory?
+    ResponseDTO response = new ResponseDTO();
+    response.setMessage("Rental created !");
 
-    return "Rental created !";
+    return response;
   }
 
   public RentalListDTO getAllRentals() {
@@ -59,13 +61,15 @@ public class RentalService {
     return convertToDTO(rental);
   }
 
-  public String updateRental(RentalRequestDTO requestDTO, Long id) {
+  public ResponseDTO updateRental(RentalRequestDTO requestDTO, Long id) {
     Rental rental = this.rentalRepository.findById(id)
       .orElseThrow(() -> new RuntimeException("Rental not found"));
     modelMapper.map(requestDTO, rental);
     rental.setUpdatedAt(LocalDateTime.now());
     this.rentalRepository.save(rental);
-    return "message: Rental updated !";
+    ResponseDTO response = new ResponseDTO();
+    response.setMessage("Rental updated !");
+    return response;
   }
 // mappers
 
