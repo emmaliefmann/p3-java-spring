@@ -12,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RentalService {
@@ -25,7 +27,7 @@ public class RentalService {
   @Autowired
   private ModelMapper modelMapper;
 
-  public RentalResponseDTO createRental(RentalRequestDTO request) {
+  public String createRental(RentalRequestDTO request) {
     // get user credentials from auth
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     // despite name of method, return value is email, not username
@@ -36,11 +38,20 @@ public class RentalService {
     System.out.println(rental);
     rentalRepository.save(rental);
     // find in reponsitory
-    // if found return the 200 code + mesj
-    RentalResponseDTO response = new RentalResponseDTO();
-    // store messages elsewhere
-    response.setMessage("Rental created !");
-    return response;
+
+    return "Rental created !";
+  }
+
+  public List<Rental> getAllRentals() {
+    // map to DTOS
+    return this.rentalRepository.findAll();
+  }
+
+  public RentalResponseDTO getRental(Long id) {
+    // map to DTOS
+    Rental rental = this.rentalRepository.findById(id)
+      .orElseThrow(() -> new RuntimeException("Rental not found"));
+    return convertToDTO(rental);
   }
 
   private Rental convertToEntity(RentalRequestDTO requestDTO, User user) {
@@ -49,5 +60,11 @@ public class RentalService {
     rental.setCreatedAt(LocalDateTime.now());
     rental.setUpdatedAt(LocalDateTime.now());
     return rental;
+  }
+
+  private RentalResponseDTO convertToDTO(Rental rental) {
+    RentalResponseDTO dto = modelMapper.map(rental, RentalResponseDTO.class);
+    System.out.println(dto.getOwner_id());
+    return dto;
   }
 }
