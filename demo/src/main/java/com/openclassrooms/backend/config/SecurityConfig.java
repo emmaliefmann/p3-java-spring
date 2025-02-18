@@ -76,9 +76,4 @@ public class SecurityConfig {
     return new BCryptPasswordEncoder();
   }
 
-   @Bean
-  public ModelMapper modelMapper() {
-    return new ModelMapper();
-  }
-
 }

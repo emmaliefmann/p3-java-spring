@@ -1,5 +1,6 @@
 package com.openclassrooms.backend.services;
 
+import com.openclassrooms.backend.dto.RentalListDTO;
 import com.openclassrooms.backend.dto.RentalRequestDTO;
 import com.openclassrooms.backend.dto.RentalResponseDTO;
 import com.openclassrooms.backend.entities.Rental;
@@ -12,8 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RentalService {
@@ -37,22 +38,36 @@ public class RentalService {
     Rental rental = convertToEntity(request, user);
     System.out.println(rental);
     rentalRepository.save(rental);
-    // find in reponsitory
+    // find in reponsitory?
 
     return "Rental created !";
   }
 
-  public List<Rental> getAllRentals() {
-    // map to DTOS
-    return this.rentalRepository.findAll();
+  public RentalListDTO getAllRentals() {
+    List<Rental> rentals = this.rentalRepository.findAll();
+    List<RentalResponseDTO> rentalDTOs = new ArrayList<>();
+
+    rentals.forEach(rental -> rentalDTOs.add(convertToDTO(rental)));
+    RentalListDTO list = new RentalListDTO();
+    list.setRentals(rentalDTOs);
+    return list;
   }
 
   public RentalResponseDTO getRental(Long id) {
-    // map to DTOS
     Rental rental = this.rentalRepository.findById(id)
       .orElseThrow(() -> new RuntimeException("Rental not found"));
     return convertToDTO(rental);
   }
+
+  public String updateRental(RentalRequestDTO requestDTO, Long id) {
+    Rental rental = this.rentalRepository.findById(id)
+      .orElseThrow(() -> new RuntimeException("Rental not found"));
+    modelMapper.map(requestDTO, rental);
+    rental.setUpdatedAt(LocalDateTime.now());
+    this.rentalRepository.save(rental);
+    return "message: Rental updated !";
+  }
+// mappers
 
   private Rental convertToEntity(RentalRequestDTO requestDTO, User user) {
     Rental rental = modelMapper.map(requestDTO, Rental.class);
@@ -64,7 +79,9 @@ public class RentalService {
 
   private RentalResponseDTO convertToDTO(Rental rental) {
     RentalResponseDTO dto = modelMapper.map(rental, RentalResponseDTO.class);
-    System.out.println(dto.getOwner_id());
+    User owner = rental.getOwner();
+    // convert date formats
+    dto.setOwner_id(owner.getId());
     return dto;
   }
 }

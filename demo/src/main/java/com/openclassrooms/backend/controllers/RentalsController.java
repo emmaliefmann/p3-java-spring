@@ -1,15 +1,11 @@
 package com.openclassrooms.backend.controllers;
 
+import com.openclassrooms.backend.dto.RentalListDTO;
 import com.openclassrooms.backend.dto.RentalRequestDTO;
 import com.openclassrooms.backend.dto.RentalResponseDTO;
-import com.openclassrooms.backend.entities.Rental;
 import com.openclassrooms.backend.services.RentalService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 public class RentalsController {
@@ -24,12 +20,17 @@ public class RentalsController {
   }
 
   @GetMapping("/rentals")
-  public List<Rental> getAllRentals() {
+  public RentalListDTO getAllRentals() {
     return this.rentalService.getAllRentals();
   }
 
   @GetMapping("/rentals/{id}")
   public RentalResponseDTO getRental(@PathVariable Long id) {
     return this.rentalService.getRental(id);
+  }
+
+  @PutMapping(value = "/rentals/{id}")
+  public String updateRental(@PathVariable Long id, @RequestBody RentalRequestDTO rental) {
+    return this.rentalService.updateRental(rental, id);
   }
 }
