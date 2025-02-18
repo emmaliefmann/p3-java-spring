@@ -51,7 +51,9 @@ public class JwtFilter extends OncePerRequestFilter {
       // directly importing UserDetails would create circular dependency
       UserDetails userDetails = context.getBean(CustomUserDetailsService.class).loadUserByUsername(email);
       if (jwtService.validateToken(token, userDetails)) {
-        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(role);
+        List<GrantedAuthority> authorities = role != null
+          ? AuthorityUtils.createAuthorityList(role)
+          : AuthorityUtils.createAuthorityList("ROLE_USER");
         UsernamePasswordAuthenticationToken authToken =
           new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

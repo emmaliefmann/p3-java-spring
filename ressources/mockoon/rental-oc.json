@@ -262,7 +262,7 @@
           "uuid": "5a37f124-6126-4ccd-92c0-04d94cdb636b",
           "body": "{}",
           "latency": 0,
-          "statusCode": 401,
+          "statusCode": 200,
           "label": "",
           "headers": [],
           "filePath": "",
@@ -313,7 +313,7 @@
           "callbacks": []
         }
       ],
-      "responseMode": null,
+      "responseMode": "SEQUENTIAL",
       "type": "http"
     },
     {

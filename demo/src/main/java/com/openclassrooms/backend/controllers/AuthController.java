@@ -2,6 +2,8 @@ package com.openclassrooms.backend.controllers;
 
 import com.openclassrooms.backend.dto.LoginRequestDTO;
 import com.openclassrooms.backend.dto.UserRequestDTO;
+import com.openclassrooms.backend.dto.UserResponseDTO;
+import com.openclassrooms.backend.entities.User;
 import com.openclassrooms.backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,8 +36,7 @@ public class AuthController {
       .body(token);
   }
 
-  @GetMapping("/auth/email")
-  public void testRoute() {
-    System.out.println("test");
-  }
+  //@GetMapping("/auth/me")
+  // return type not found in mockoon ?
+
 }

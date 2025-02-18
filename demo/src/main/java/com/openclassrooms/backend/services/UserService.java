@@ -5,6 +5,7 @@ import com.openclassrooms.backend.dto.UserRequestDTO;
 import com.openclassrooms.backend.dto.UserResponseDTO;
 import com.openclassrooms.backend.entities.User;
 import com.openclassrooms.backend.repositories.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -76,7 +77,7 @@ public class UserService {
     }
     else if(!auth.isAuthenticated()) {
       System.out.println("not authenticated    ");
-    throw new RuntimeException("Login failed for user: " + user.getEmail());
+      throw new RuntimeException("Login failed for user: " + user.getEmail());
     }
     System.out.println("should throw error");
     throw new RuntimeException("Login failed for user: " + user.getEmail());

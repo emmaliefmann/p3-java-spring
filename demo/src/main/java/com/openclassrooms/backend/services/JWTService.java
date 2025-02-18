@@ -34,6 +34,7 @@ public class JWTService {
   public String generateToken(LoginRequestDTO user) {
 
     Map<String, Object> claims = new HashMap<>();
+    claims.put("role", "ROLE_USER");
     return Jwts.builder()
       .claims()
       .add(claims)
