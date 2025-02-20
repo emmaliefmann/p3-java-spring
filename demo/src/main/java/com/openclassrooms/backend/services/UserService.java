@@ -1,6 +1,7 @@
 package com.openclassrooms.backend.services;
 
 import com.openclassrooms.backend.dto.LoginRequestDTO;
+import com.openclassrooms.backend.dto.TokenResponseDTO;
 import com.openclassrooms.backend.dto.UserRequestDTO;
 import com.openclassrooms.backend.dto.UserResponseDTO;
 import com.openclassrooms.backend.entities.User;
@@ -8,6 +9,7 @@ import com.openclassrooms.backend.exceptions.AuthenticationException;
 import com.openclassrooms.backend.exceptions.UserAlreadyExistsException;
 import com.openclassrooms.backend.exceptions.UserNotFoundException;
 import com.openclassrooms.backend.repositories.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -31,6 +34,9 @@ public class UserService {
 
   @Autowired
   private JWTService jwtService;
+
+  @Autowired
+  private ModelMapper modelMapper;
 
   public UserService(PasswordEncoder passwordEncoder) {
     this.passwordEncoder = passwordEncoder;
@@ -54,14 +60,8 @@ public class UserService {
   public UserResponseDTO getUserById(Long id) {
     User user = userRepository.findUserById(id)
       .orElseThrow(() -> new UserNotFoundException("User not found"));
-    UserResponseDTO responseDTO = new UserResponseDTO();
-    responseDTO.setId(user.getId());
-    responseDTO.setName(user.getName());
-    responseDTO.setEmail(user.getEmail());
-    responseDTO.setCreatedAt(user.getCreatedAt());
-    responseDTO.setUpdateAt(user.getUpdateAt());
 
-    return responseDTO;
+    return convertToDTO(user);
   }
 
   public User getUserWithEmail(String email) {
@@ -69,15 +69,29 @@ public class UserService {
       .orElseThrow(() -> new RuntimeException("User not found"));
   }
 
-  public String verifyUser(LoginRequestDTO user) {
-    Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+  public TokenResponseDTO verifyUser(LoginRequestDTO user) {
+    Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword()));
 
     if (auth.isAuthenticated()) {
-      return jwtService.generateToken(user);
+     String token = jwtService.generateToken(user);
+      TokenResponseDTO response = new TokenResponseDTO();
+      response.setToken(token);
+      return response;
     }
     else if(!auth.isAuthenticated()) {
-      throw new AuthenticationException("Login failed for user: " + user.getEmail());
+      throw new AuthenticationException("Login failed for user: " + user.getLogin());
     }
-    throw new AuthenticationException("Login failed for user: " + user.getEmail());
+    throw new AuthenticationException("Login failed for user: " + user.getLogin());
+  }
+
+  private UserResponseDTO convertToDTO(User user) {
+    UserResponseDTO dto = modelMapper.map(user, UserResponseDTO.class);
+    if (user.getCreatedAt() != null) {
+      dto.setCreatedAt(user.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
+    }
+    if (user.getUpdateAt() != null) {
+      dto.setUpdateAt(user.getUpdateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
+    }
+    return dto;
   }
 }

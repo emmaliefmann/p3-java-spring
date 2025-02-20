@@ -37,7 +37,7 @@ public class JWTService {
     return Jwts.builder()
       .claims()
       .add(claims)
-      .subject(user.getEmail())
+      .subject(user.getLogin())
       .issuedAt(new Date(System.currentTimeMillis()))
       .expiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
       .and()

@@ -6,23 +6,23 @@ public class UserResponseDTO {
   private Long id;
   private String name;
   private String email;
-  private LocalDateTime createdAt;
-  private LocalDateTime updateAt;
+  private String createdAt;
+  private String updateAt;
 
-  public LocalDateTime getUpdateAt() {
-    return updateAt;
+
+  public Long getId() {
+    return id;
   }
 
-  public void setUpdateAt(LocalDateTime updateAt) {
-    this.updateAt = updateAt;
+  public void setId(Long id) {
+    this.id = id;
+  }
+  public String getName() {
+    return name;
   }
 
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(LocalDateTime createdAt) {
-    this.createdAt = createdAt;
+  public void setName(String name) {
+    this.name = name;
   }
 
   public String getEmail() {
@@ -33,19 +33,19 @@ public class UserResponseDTO {
     this.email = email;
   }
 
-  public String getName() {
-    return name;
+  public String getCreatedAt() {
+    return createdAt;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setCreatedAt(String createdAt) {
+    this.createdAt = createdAt;
   }
 
-  public Long getId() {
-    return id;
+  public String getUpdateAt() {
+    return updateAt;
   }
 
-  public void setId(Long id) {
-    this.id = id;
+  public void setUpdateAt(String updateAt) {
+    this.updateAt = updateAt;
   }
 }
