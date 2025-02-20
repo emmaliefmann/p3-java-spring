@@ -44,7 +44,7 @@ public class SecurityConfig {
     http.csrf(AbstractHttpConfigurer::disable)
       .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .authorizeHttpRequests(request -> request
-        .requestMatchers("auth/email", "auth/register").permitAll()
+        .requestMatchers("auth/email", "auth/register", "rentals").permitAll()
       .anyRequest().authenticated())
       .httpBasic(Customizer.withDefaults())
         .addFilterBefore(jwtFilter, BasicAuthenticationFilter.class);
