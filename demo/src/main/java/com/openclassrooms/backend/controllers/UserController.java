@@ -16,7 +16,6 @@ public class UserController {
 
   @GetMapping("/user/{id}")
   public UserResponseDTO getUserById(@PathVariable Long id) {
-    System.out.println("user controller");
     return userService.getUserById(id);
   }
 }

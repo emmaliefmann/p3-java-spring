@@ -32,22 +32,18 @@ public class JwtFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-    System.out.println("do filter internal method...");
     String authHeader = request.getHeader("Authorization");
     String token = null;
     String email = null;
     String role = null;
-      System.out.println("Token received" + authHeader);
 
     if(authHeader !=null && authHeader.startsWith("Bearer ")) {
       token = authHeader.substring(7);
       email = jwtService.extractEmail(token);
-      System.out.println("email extracted in filter " + email);
       role = jwtService.extractRole(token);
     }
 
     if(email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-      System.out.println("not authenticated");
       // directly importing UserDetails would create circular dependency
       UserDetails userDetails = context.getBean(CustomUserDetailsService.class).loadUserByUsername(email);
       if (jwtService.validateToken(token, userDetails)) {

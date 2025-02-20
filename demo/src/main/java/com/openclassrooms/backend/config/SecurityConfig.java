@@ -41,11 +41,10 @@ public class SecurityConfig {
 
   @Bean
   SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    System.out.println("Security config.........");
     http.csrf(AbstractHttpConfigurer::disable)
       .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .authorizeHttpRequests(request -> request
-        .requestMatchers("auth/email", "rentals").permitAll()
+        .requestMatchers("auth/email", "auth/register").permitAll()
       .anyRequest().authenticated())
       .httpBasic(Customizer.withDefaults())
         .addFilterBefore(jwtFilter, BasicAuthenticationFilter.class);
