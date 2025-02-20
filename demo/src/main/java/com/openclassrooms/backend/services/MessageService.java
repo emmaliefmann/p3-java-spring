@@ -5,6 +5,8 @@ import com.openclassrooms.backend.dto.ResponseDTO;
 import com.openclassrooms.backend.entities.Message;
 import com.openclassrooms.backend.entities.Rental;
 import com.openclassrooms.backend.entities.User;
+import com.openclassrooms.backend.exceptions.RentalNotFoundException;
+import com.openclassrooms.backend.exceptions.UserNotFoundException;
 import com.openclassrooms.backend.repositories.MessageRepository;
 import com.openclassrooms.backend.repositories.RentalRepository;
 import com.openclassrooms.backend.repositories.UserRepository;
@@ -43,10 +45,10 @@ public class MessageService {
     message.setCreatedAt(LocalDateTime.now());
     message.setUpdatedAt(LocalDateTime.now());
     User user = this.userRepository.findUserById(messageDTO.getUser_id())
-      .orElseThrow(() -> new RuntimeException("User not found"));
+      .orElseThrow(() -> new UserNotFoundException("User not found"));
     message.setUser(user);
     Rental rental = this.rentalRepository.findById(messageDTO.getRental_id())
-      .orElseThrow(() -> new RuntimeException("Rental not found"));
+      .orElseThrow(() -> new RentalNotFoundException("Rental not found"));
     message.setRental(rental);
     return message;
   }

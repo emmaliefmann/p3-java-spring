@@ -17,7 +17,7 @@
           "uuid": "28fc815b-1c32-431f-8c4b-cdf017a9ce04",
           "body": "{}",
           "latency": 0,
-          "statusCode": 400,
+          "statusCode": 200,
           "label": "",
           "headers": [],
           "filePath": "",

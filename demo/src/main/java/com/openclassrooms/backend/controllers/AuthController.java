@@ -22,13 +22,11 @@ public class AuthController {
 
   @PostMapping("/auth/register")
   public void registerUser(@RequestBody UserRequestDTO request) {
-    System.out.println("controller auth");
     userService.registerNewUser(request);
   }
 
   @PostMapping("/auth/email")
   public ResponseEntity<String> login(@RequestBody LoginRequestDTO login) {
-    System.out.println("controller auth");
     String token = userService.verifyUser(login);
     System.out.println("Token " + token);
     return ResponseEntity.ok()
