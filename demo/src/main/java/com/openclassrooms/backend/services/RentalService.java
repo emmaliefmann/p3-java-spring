@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -30,14 +31,28 @@ public class RentalService {
   @Autowired
   private ModelMapper modelMapper;
 
+  @Autowired
+  private FileStorageService fileStorageService;
+
   public ResponseDTO createRental(RentalRequestDTO request) {
-    // get user credentials from auth
+    // get user credentials
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     // despite name of method, return value is email, not username
     String email = auth.getName();
     System.out.println(" rental service " + email);
     User user = userService.getUserWithEmail(email);
+
+    // handle image files
+    String fileUrl = null;
+
+    try {
+      fileUrl = fileStorageService.saveFile(request.getPicture());
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
     Rental rental = convertToEntity(request, user);
+    rental.setPicture(fileUrl);
     System.out.println(rental);
     rentalRepository.save(rental);
     ResponseDTO response = new ResponseDTO();

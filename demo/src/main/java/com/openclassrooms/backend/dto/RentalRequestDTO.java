@@ -1,11 +1,13 @@
 package com.openclassrooms.backend.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class RentalRequestDTO {
 
   private String name;
   private float surface;
   private float price;
-  private String picture;
+  private MultipartFile picture;
   private String description;
 
   public String getName() {
@@ -32,11 +34,11 @@ public class RentalRequestDTO {
     this.price = price;
   }
 
-  public String getPicture() {
+  public MultipartFile getPicture() {
     return picture;
   }
 
-  public void setPicture(String picture) {
+  public void setPicture(MultipartFile picture) {
     this.picture = picture;
   }
 
