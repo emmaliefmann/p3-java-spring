@@ -28,7 +28,6 @@ public class AuthController {
   @PostMapping("/auth/email")
   public ResponseEntity<String> login(@RequestBody LoginRequestDTO login) {
     String token = userService.verifyUser(login);
-    System.out.println("Token " + token);
     return ResponseEntity.ok()
       .contentType(MediaType.APPLICATION_JSON)
       .body(token);

@@ -70,14 +70,14 @@ public class UserService {
   }
 
   public String verifyUser(LoginRequestDTO user) {
-    Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+    Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword()));
 
     if (auth.isAuthenticated()) {
       return jwtService.generateToken(user);
     }
     else if(!auth.isAuthenticated()) {
-      throw new AuthenticationException("Login failed for user: " + user.getEmail());
+      throw new AuthenticationException("Login failed for user: " + user.getLogin());
     }
-    throw new AuthenticationException("Login failed for user: " + user.getEmail());
+    throw new AuthenticationException("Login failed for user: " + user.getLogin());
   }
 }
