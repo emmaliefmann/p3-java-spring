@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,6 +86,13 @@ public class RentalService {
     RentalResponseDTO dto = modelMapper.map(rental, RentalResponseDTO.class);
     User owner = rental.getOwner();
     // convert date formats
+    if (rental.getCreatedAt() != null) {
+      dto.setCreatedAt(rental.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
+    }
+    if (rental.getUpdatedAt() != null) {
+      dto.setUpdatedAt(rental.getUpdatedAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
+    }
+
     dto.setOwner_id(owner.getId());
     return dto;
   }
