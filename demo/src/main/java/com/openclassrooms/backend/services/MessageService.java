@@ -7,6 +7,7 @@ import com.openclassrooms.backend.entities.Rental;
 import com.openclassrooms.backend.entities.User;
 import com.openclassrooms.backend.exceptions.RentalNotFoundException;
 import com.openclassrooms.backend.exceptions.UserNotFoundException;
+import com.openclassrooms.backend.mappers.MessageMapper;
 import com.openclassrooms.backend.repositories.MessageRepository;
 import com.openclassrooms.backend.repositories.RentalRepository;
 import com.openclassrooms.backend.repositories.UserRepository;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 @Service
 public class MessageService {
 
+  private final MessageMapper messageMapper;
   @Autowired
   MessageRepository messageRepository;
 
@@ -31,26 +33,22 @@ public class MessageService {
   @Autowired
   ModelMapper modelMapper;
 
+  public MessageService(MessageMapper messageMapper) {
+    this.messageMapper = messageMapper;
+  }
+
   public ResponseDTO createMessage(MessageRequestDTO request) {
-    Message message = convertToEntity(request);
+    User user = this.userRepository.findUserById(request.getUser_id())
+      .orElseThrow(() -> new UserNotFoundException("User not found"));
+    Rental rental = this.rentalRepository.findById(request.getRental_id())
+      .orElseThrow(() -> new RentalNotFoundException("Rental not found"));
+    Message message = messageMapper.convertToEntity(request, user, rental);
     this.messageRepository.save(message);
     ResponseDTO response = new ResponseDTO();
     response.setMessage("Message send with success");
     return response;
   }
 
-  private Message convertToEntity(MessageRequestDTO messageDTO) {
-    Message message = new Message();
-    message.setMessage(messageDTO.getMessage());
-    message.setCreatedAt(LocalDateTime.now());
-    message.setUpdatedAt(LocalDateTime.now());
-    User user = this.userRepository.findUserById(messageDTO.getUser_id())
-      .orElseThrow(() -> new UserNotFoundException("User not found"));
-    message.setUser(user);
-    Rental rental = this.rentalRepository.findById(messageDTO.getRental_id())
-      .orElseThrow(() -> new RentalNotFoundException("Rental not found"));
-    message.setRental(rental);
-    return message;
-  }
+
 
 }
