@@ -8,6 +8,7 @@ import com.openclassrooms.backend.entities.User;
 import com.openclassrooms.backend.exceptions.AuthenticationException;
 import com.openclassrooms.backend.exceptions.UserAlreadyExistsException;
 import com.openclassrooms.backend.exceptions.UserNotFoundException;
+import com.openclassrooms.backend.mappers.UserMapper;
 import com.openclassrooms.backend.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-
+  private final UserMapper userMapper;
   private final PasswordEncoder passwordEncoder;
 
   @Autowired
@@ -38,8 +39,10 @@ public class UserService {
   @Autowired
   private ModelMapper modelMapper;
 
-  public UserService(PasswordEncoder passwordEncoder) {
+  public UserService(PasswordEncoder passwordEncoder, UserMapper userMapper) {
+
     this.passwordEncoder = passwordEncoder;
+    this.userMapper = userMapper;
   }
 
   public void registerNewUser(UserRequestDTO userDTO) {
@@ -61,7 +64,7 @@ public class UserService {
     User user = userRepository.findUserById(id)
       .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-    return convertToDTO(user);
+    return userMapper.convertToDTO(user);
   }
 
   public User getUserWithEmail(String email) {
@@ -82,16 +85,5 @@ public class UserService {
       throw new AuthenticationException("Login failed for user: " + user.getLogin());
     }
     throw new AuthenticationException("Login failed for user: " + user.getLogin());
-  }
-
-  private UserResponseDTO convertToDTO(User user) {
-    UserResponseDTO dto = modelMapper.map(user, UserResponseDTO.class);
-    if (user.getCreatedAt() != null) {
-      dto.setCreatedAt(user.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
-    }
-    if (user.getUpdateAt() != null) {
-      dto.setUpdateAt(user.getUpdateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
-    }
-    return dto;
   }
 }
