@@ -12,6 +12,7 @@ This project is a Rental Management API built with Spring Boot and Angular. It a
 - Upload images for rentals
 - User Profile Management
 - Secure API Endpoints with JWT authentication
+- A Swagger UI to easily test endpoints, available here : [Swagger UI] (http://localhost:3001/api/swagger-ui/index.html)
 
 ## Tech Stack
 
@@ -46,11 +47,12 @@ git clone https://github.com/your-repo.git
 ```
 cd backend
 ```
-Configure the database in `application.properties` :
+Create a local database by importing the SQL script from #YOUR_FILE_PATH/ressources/sql.script into your SQL tool of choice.
+Configure the database in `application.properties`, replacing each variable with your local information:
 ```
-spring.datasource.url=jdbc:postgresql://localhost:5432/rentals_db
-spring.datasource.username=your_username
-spring.datasource.password=your_password
+spring.datasource.url= #URL_LOCAL_DB
+spring.datasource.username= #YOUR_USERNAME
+spring.datasource.password= #YOUR_PASSWORD
 ```
 Run the application:
 ```
