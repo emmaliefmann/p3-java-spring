@@ -10,6 +10,7 @@ import com.openclassrooms.backend.exceptions.UserAlreadyExistsException;
 import com.openclassrooms.backend.exceptions.UserNotFoundException;
 import com.openclassrooms.backend.mappers.UserMapper;
 import com.openclassrooms.backend.repositories.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +27,7 @@ import java.util.Optional;
 public class UserService {
   private final UserMapper userMapper;
   private final PasswordEncoder passwordEncoder;
+  private final HttpServletRequest request;
 
   @Autowired
   private UserRepository userRepository;
@@ -39,25 +41,26 @@ public class UserService {
   @Autowired
   private ModelMapper modelMapper;
 
-  public UserService(PasswordEncoder passwordEncoder, UserMapper userMapper) {
-
+  public UserService(PasswordEncoder passwordEncoder, UserMapper userMapper, HttpServletRequest request) {
     this.passwordEncoder = passwordEncoder;
     this.userMapper = userMapper;
+    this.request = request;
   }
 
-  public void registerNewUser(UserRequestDTO userDTO) {
+  public TokenResponseDTO registerNewUser(UserRequestDTO userDTO) {
+    // Check user does not already exist
     Optional<User> existingUser = this.userRepository.findByEmail(userDTO.getEmail());
     if (existingUser.isPresent()) {
       throw new UserAlreadyExistsException("User with this email already exists");
     }
-
-    User user = new User();
-    user.setEmail(userDTO.getEmail());
-    user.setName(userDTO.getName());
-    user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-    user.setCreatedAt(LocalDateTime.now());
-    user.setUpdateAt(LocalDateTime.now());
+    String password = passwordEncoder.encode(userDTO.getPassword());
+    User user = userMapper.convertToEntity(userDTO, password);
     userRepository.save(user);
+
+    String token = jwtService.generateToken(userDTO.getEmail());
+    TokenResponseDTO response = new TokenResponseDTO();
+    response.setToken(token);
+    return response;
   }
 
   public UserResponseDTO getUserById(Long id) {
@@ -76,14 +79,21 @@ public class UserService {
     Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword()));
 
     if (auth.isAuthenticated()) {
-     String token = jwtService.generateToken(user);
+      String token = jwtService.generateToken(user.getLogin());
       TokenResponseDTO response = new TokenResponseDTO();
       response.setToken(token);
       return response;
-    }
-    else if(!auth.isAuthenticated()) {
+    } else if (!auth.isAuthenticated()) {
       throw new AuthenticationException("Login failed for user: " + user.getLogin());
     }
     throw new AuthenticationException("Login failed for user: " + user.getLogin());
+  }
+
+  public UserResponseDTO getConnectedUser() {
+    String authHeader = request.getHeader("Authorization");
+    String token = authHeader.substring(7);
+    String email = jwtService.extractEmail(token);
+    User user = getUserWithEmail(email);
+    return userMapper.convertToDTO(user);
   }
 }

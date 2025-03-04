@@ -22,8 +22,8 @@ public class AuthController {
   UserService userService;
 
   @PostMapping("/auth/register")
-  public void registerUser(@RequestBody UserRequestDTO request) {
-    userService.registerNewUser(request);
+  public TokenResponseDTO registerUser(@RequestBody UserRequestDTO request) {
+    return userService.registerNewUser(request);
   }
 
   @PostMapping("/auth/email")
@@ -31,7 +31,9 @@ public class AuthController {
     return userService.verifyUser(login);
   }
 
-  //@GetMapping("/auth/me")
-  // return type not found in mockoon ?
+  @GetMapping("/auth/me")
+  public UserResponseDTO getConnectedUser() {
+    return userService.getConnectedUser();
+  }
 
 }

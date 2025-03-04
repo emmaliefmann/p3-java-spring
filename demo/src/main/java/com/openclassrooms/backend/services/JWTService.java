@@ -31,13 +31,13 @@ public class JWTService {
     }
   }
 
-  public String generateToken(LoginRequestDTO user) {
+  public String generateToken(String email) {
     Map<String, Object> claims = new HashMap<>();
     claims.put("role", "ROLE_USER");
     return Jwts.builder()
       .claims()
       .add(claims)
-      .subject(user.getLogin())
+      .subject(email)
       .issuedAt(new Date(System.currentTimeMillis()))
       .expiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
       .and()
