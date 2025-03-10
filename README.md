@@ -57,6 +57,11 @@ spring.datasource.password= #YOUR_PASSWORD
 For file storage during local development, you will need to declare a local folder where images will be stored. 
 Alter the path at the variable **UPLOAD_DIR** in FileStorageService.java
 
+Install the project
+```
+mvn clean install
+```
+
 Run the application:
 ```
 mvn spring-boot:run
