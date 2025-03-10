@@ -48,12 +48,15 @@ git clone https://github.com/your-repo.git
 cd backend
 ```
 Create a local database by importing the SQL script from #YOUR_FILE_PATH/ressources/sql.script into your SQL tool of choice.
-Configure the database in `application.properties`, replacing each variable with your local information:
+Configure the database in `application.properties`, replacing each variable with your local information or local environment variables:
 ```
 spring.datasource.url= #URL_LOCAL_DB
 spring.datasource.username= #YOUR_USERNAME
 spring.datasource.password= #YOUR_PASSWORD
 ```
+For file storage during local development, you will need to declare a local folder where images will be stored. 
+Alter the path at the variable **UPLOAD_DIR** in FileStorageService.java
+
 Run the application:
 ```
 mvn spring-boot:run
