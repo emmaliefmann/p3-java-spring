@@ -36,7 +36,7 @@ This project is a Rental Management API built with Spring Boot and Angular. It a
 **Prerequisites:**
 
 - Java 17+
-- PostgreSQL
+- SQL
 
 **Steps:**
 
