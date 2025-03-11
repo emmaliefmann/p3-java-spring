@@ -12,29 +12,25 @@ import com.openclassrooms.backend.repositories.MessageRepository;
 import com.openclassrooms.backend.repositories.RentalRepository;
 import com.openclassrooms.backend.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 public class MessageService {
 
   private final MessageMapper messageMapper;
-  @Autowired
-  MessageRepository messageRepository;
 
-  @Autowired
-  UserRepository userRepository;
+  private final MessageRepository messageRepository;
 
-  @Autowired
-  RentalRepository rentalRepository;
+  private final UserRepository userRepository;
 
-  @Autowired
-  ModelMapper modelMapper;
 
-  public MessageService(MessageMapper messageMapper) {
+  private final RentalRepository rentalRepository;
+
+  public MessageService(MessageMapper messageMapper, MessageRepository messageRepository, UserRepository userRepository, RentalRepository rentalRepository, ModelMapper modelMapper) {
     this.messageMapper = messageMapper;
+    this.messageRepository = messageRepository;
+    this.userRepository = userRepository;
+    this.rentalRepository = rentalRepository;
   }
 
   public ResponseDTO createMessage(MessageRequestDTO request) {
