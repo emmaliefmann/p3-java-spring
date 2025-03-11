@@ -9,7 +9,6 @@ import com.openclassrooms.backend.entities.User;
 import com.openclassrooms.backend.mappers.RentalMapper;
 import com.openclassrooms.backend.repositories.RentalRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -24,20 +23,21 @@ public class RentalService {
 
   private final RentalMapper rentalMapper;
 
-  @Autowired
-  private RentalRepository rentalRepository;
+  private final RentalRepository rentalRepository;
 
-  @Autowired
-  private UserService userService;
+  private final UserService userService;
 
-  @Autowired
-  private ModelMapper modelMapper;
+  private final ModelMapper modelMapper;
 
-  @Autowired
-  private FileStorageService fileStorageService;
 
-  public RentalService(RentalMapper rentalMapper) {
+  private final FileStorageService fileStorageService;
+
+  public RentalService(RentalMapper rentalMapper, RentalRepository rentalRepository, UserService userService, ModelMapper modelMapper, FileStorageService fileStorageService) {
     this.rentalMapper = rentalMapper;
+    this.rentalRepository = rentalRepository;
+    this.userService = userService;
+    this.modelMapper = modelMapper;
+    this.fileStorageService = fileStorageService;
   }
 
   public ResponseDTO createRental(RentalRequestDTO request) throws IOException {
