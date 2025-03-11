@@ -6,7 +6,10 @@ import com.openclassrooms.backend.dto.RentalResponseDTO;
 import com.openclassrooms.backend.dto.ResponseDTO;
 import com.openclassrooms.backend.entities.Rental;
 import com.openclassrooms.backend.services.RentalService;
+import io.jsonwebtoken.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,20 +20,24 @@ public class RentalsController {
   @Autowired
   RentalService rentalService;
 
-  // double check address, in postman collection /1, likelt error
   @PostMapping(consumes = "multipart/form-data")
-  public ResponseDTO createRental(@RequestParam("name") String name,
-                                  @RequestParam("surface") float surface,
-                                  @RequestParam("price") float price,
-                                  @RequestParam("description") String description,
-                                  @RequestParam("picture") MultipartFile picture) {
-    RentalRequestDTO rental = new RentalRequestDTO();
-    rental.setName(name);
-    rental.setSurface(surface);
-    rental.setPrice(price);
-    rental.setDescription(description);
-    rental.setPicture(picture);
-      return this.rentalService.createRental(rental);
+  public ResponseEntity<ResponseDTO> createRental(@RequestParam("name") String name,
+                                                 @RequestParam("surface") float surface,
+                                                 @RequestParam("price") float price,
+                                                 @RequestParam("description") String description,
+                                                 @RequestParam("picture") MultipartFile picture) {
+    try {
+      RentalRequestDTO rental = new RentalRequestDTO();
+      rental.setName(name);
+      rental.setSurface(surface);
+      rental.setPrice(price);
+      rental.setDescription(description);
+      rental.setPicture(picture);
+      ResponseDTO rentalResponse = this.rentalService.createRental(rental);
+      return ResponseEntity.ok(rentalResponse);
+    } catch (java.io.IOException e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
   }
 
   @GetMapping

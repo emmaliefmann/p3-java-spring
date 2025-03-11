@@ -12,8 +12,8 @@ import java.util.UUID;
 @Service
 public class FileStorageService {
 
-  // Change for directory location on personal device
-  private final String UPLOAD_DIR = "C://uploads/";
+  // Ensure the uploads directory is present at the project root
+  private static final String UPLOAD_DIR = "uploads/";
 
   public String saveFile(MultipartFile file) throws IOException {
     if (file.isEmpty()) {
@@ -21,10 +21,10 @@ public class FileStorageService {
     }
 
     String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-    Path filePath = Paths.get(UPLOAD_DIR + fileName);
+    Path filePath = Paths.get(UPLOAD_DIR, fileName);
     Files.createDirectories(filePath.getParent());
     Files.write(filePath, file.getBytes());
 
-    return UPLOAD_DIR + fileName;
-    }
+    return "/api/images/" + fileName;
+  }
 }
