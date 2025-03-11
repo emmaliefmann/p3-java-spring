@@ -26,7 +26,7 @@ public class AuthController {
     return userService.registerNewUser(request);
   }
 
-  @PostMapping("/auth/email")
+  @PostMapping("/auth/login")
   public TokenResponseDTO login(@RequestBody LoginRequestDTO login) {
     return userService.verifyUser(login);
   }

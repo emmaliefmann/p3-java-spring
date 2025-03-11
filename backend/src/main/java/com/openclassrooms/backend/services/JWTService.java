@@ -19,9 +19,12 @@ import java.util.function.Function;
 @Service
 public class JWTService {
 
-  private String secretKey;
+  private final String secretKey;
+  private final int tokenDurationMinutes = 30;
 
   public JWTService() {
+    // This method regenerates a secret key each time the application starts, rather than storing a secret key
+    // If a longer validity is required, the secret key should be stored externally and not be regenerated each time
     try {
       KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
       SecretKey sk = keyGen.generateKey();
@@ -39,7 +42,7 @@ public class JWTService {
       .add(claims)
       .subject(email)
       .issuedAt(new Date(System.currentTimeMillis()))
-      .expiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
+      .expiration(new Date(System.currentTimeMillis() + tokenDurationMinutes * 60 * 1000))
       .and()
       .signWith(getKey())
       .compact();

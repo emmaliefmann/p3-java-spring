@@ -19,8 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -76,17 +74,17 @@ public class UserService {
   }
 
   public TokenResponseDTO verifyUser(LoginRequestDTO user) {
-    Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword()));
+    Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 
     if (auth.isAuthenticated()) {
-      String token = jwtService.generateToken(user.getLogin());
+      String token = jwtService.generateToken(user.getEmail());
       TokenResponseDTO response = new TokenResponseDTO();
       response.setToken(token);
       return response;
     } else if (!auth.isAuthenticated()) {
-      throw new AuthenticationException("Login failed for user: " + user.getLogin());
+      throw new AuthenticationException("Login failed for user: " + user.getEmail());
     }
-    throw new AuthenticationException("Login failed for user: " + user.getLogin());
+    throw new AuthenticationException("Login failed for user: " + user.getEmail());
   }
 
   public UserResponseDTO getConnectedUser() {
