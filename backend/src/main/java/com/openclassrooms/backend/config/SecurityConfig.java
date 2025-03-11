@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -46,6 +47,7 @@ public class SecurityConfig {
       .authorizeHttpRequests(request -> request
         .requestMatchers("auth/login", "auth/register", "swagger-ui/**", "/v3/api-docs/**",
           "/api/auth/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
       .anyRequest().authenticated())
       .httpBasic(httpBasic -> httpBasic.disable())
         .addFilterBefore(jwtFilter, BasicAuthenticationFilter.class);

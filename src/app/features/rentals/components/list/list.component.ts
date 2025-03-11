@@ -20,4 +20,8 @@ export class ListComponent {
   get user(): User | undefined {
     return this.sessionService.user;
   }
+
+  public getRentalUrl(url: string): string {
+    return `http://localhost:3001${url}`;
+  }
 }

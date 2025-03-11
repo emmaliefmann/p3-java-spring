@@ -1,4 +1,5 @@
 <div class="list">
+
     <mat-card>
         <mat-card-header fxLayout="row" fxLayoutAlign="space-between center">
             <mat-card-title class="m0">Rentals available</mat-card-title>
@@ -15,7 +16,7 @@
                         <app-owner-info [ownerId]="rental.owner_id"></app-owner-info>
                     </mat-card-subtitle>
                 </mat-card-header>
-                <img mat-card-image [src]="rental.picture" alt="Rental picture">
+                <img mat-card-image [src]=getRentalUrl(rental.picture) alt="Rental picture">
                 <mat-card-content>
                     <p>
                         {{ rental.description }}

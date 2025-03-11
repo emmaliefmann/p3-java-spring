@@ -40,22 +40,14 @@ public class RentalService {
     this.rentalMapper = rentalMapper;
   }
 
-  public ResponseDTO createRental(RentalRequestDTO request) {
+  public ResponseDTO createRental(RentalRequestDTO request) throws IOException {
     // get user credentials
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     // despite name of method, return value is email, not username
     String email = auth.getName();
     User user = userService.getUserWithEmail(email);
 
-    // handle image files
-    String fileUrl = null;
-
-    try {
-      fileUrl = fileStorageService.saveFile(request.getPicture());
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-
+    String fileUrl = fileStorageService.saveFile(request.getPicture());
     Rental rental = rentalMapper.convertToEntity(request, user);
     rental.setPicture(fileUrl);
     rentalRepository.save(rental);
