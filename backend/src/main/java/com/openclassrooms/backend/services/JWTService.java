@@ -3,12 +3,15 @@ package com.openclassrooms.backend.services;
 import com.openclassrooms.backend.dto.LoginRequestDTO;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Date;
@@ -22,13 +25,13 @@ public class JWTService {
   private final String secretKey;
   private final int tokenDurationMinutes = 30;
 
-  public JWTService() {
+  public JWTService(@Value("${jwt.secret}") String key) {
     // This method regenerates a secret key each time the application starts, rather than storing a secret key
     // If a longer validity is required, the secret key should be stored externally and not be regenerated each time
     try {
       KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
       SecretKey sk = keyGen.generateKey();
-      this.secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
+      this.secretKey = Base64.getEncoder().encodeToString(new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256").getEncoded());
     } catch (NoSuchAlgorithmException e) {
       throw new RuntimeException(e);
     }
